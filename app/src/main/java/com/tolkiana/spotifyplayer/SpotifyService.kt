@@ -11,9 +11,7 @@ import com.spotify.protocol.types.Track
 
 
 enum class PlayingState {
-    PAUSED,
-    PLAYING,
-    STOPPED
+    PAUSED, PLAYING, STOPPED
 }
 
 object SpotifyService {
@@ -83,15 +81,15 @@ object SpotifyService {
         }
     }
 
-    fun isPlaying(handler: (Boolean) -> Unit) {
+    fun playingState(handler: (PlayingState) -> Unit) {
         mSpotifyAppRemote?.playerApi?.playerState?.setResultCallback { result ->
-            handler(result.track.uri != null && !result.isPaused)
-        }
-    }
-
-    fun isPaused(handler: (Boolean) -> Unit) {
-        mSpotifyAppRemote?.playerApi?.playerState?.setResultCallback { result ->
-            handler(result.isPaused)
+            if (result.track.uri == null) {
+                handler(PlayingState.STOPPED)
+            } else if (result.isPaused) {
+                handler(PlayingState.PAUSED)
+            } else {
+                handler(PlayingState.PLAYING)
+            }
         }
     }
 

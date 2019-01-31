@@ -19,11 +19,11 @@ class PlayerActivity : AppCompatActivity() {
             trackImageView.setImageBitmap(it)
         }
 
-        SpotifyService.isPlaying {
-            if (it) {
-                showPauseButton()
-            } else {
-                showPlayButton()
+        SpotifyService.playingState {
+            when(it) {
+                PlayingState.PLAYING -> showPauseButton()
+                PlayingState.STOPPED -> showPlayButton()
+                PlayingState.PAUSED -> showResumeButton()
             }
         }
     }
@@ -36,17 +36,30 @@ class PlayerActivity : AppCompatActivity() {
 
         pauseButton.setOnClickListener {
             SpotifyService.pause()
-            showPlayButton()
+            showResumeButton()
         }
-    }
 
-    private fun showPauseButton() {
-        playButton.visibility = View.GONE
-        pauseButton.visibility = View.VISIBLE
+        resumeButton.setOnClickListener {
+            SpotifyService.resume()
+            showPauseButton()
+        }
     }
 
     private fun showPlayButton() {
         playButton.visibility = View.VISIBLE
         pauseButton.visibility = View.GONE
+        resumeButton.visibility = View.GONE
+    }
+
+    private fun showPauseButton() {
+        playButton.visibility = View.GONE
+        pauseButton.visibility = View.VISIBLE
+        resumeButton.visibility = View.GONE
+    }
+
+    private fun showResumeButton() {
+        playButton.visibility = View.GONE
+        pauseButton.visibility = View.GONE
+        resumeButton.visibility = View.VISIBLE
     }
 }
