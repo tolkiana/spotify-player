@@ -14,6 +14,11 @@ class PlayerActivity : AppCompatActivity() {
         setupListeners()
     }
 
+    override fun onStop() {
+        super.onStop()
+        SpotifyService.disconnect()
+    }
+
     private fun setupViews () {
         SpotifyService.getCurrentTrackImage {
             trackImageView.setImageBitmap(it)
