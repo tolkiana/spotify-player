@@ -17,25 +17,25 @@ object SpotifyService {
         .showAuthView(true)
         .build()
 
-    fun connect(context: Context, handler: () -> Unit) {
+    fun connect(context: Context, handler: (connected: Boolean) -> Unit) {
 
         if (mSpotifyAppRemote?.isConnected == true) {
-            handler()
+            handler(true)
             return
         }
 
-        SpotifyAppRemote.connect(context, connectionParams,
-            object : Connector.ConnectionListener {
+        val connectionListener = object : Connector.ConnectionListener {
+            override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                mSpotifyAppRemote = spotifyAppRemote
+                handler(true)
+            }
 
-                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                    mSpotifyAppRemote = spotifyAppRemote
-                    handler()
-                }
-
-                override fun onFailure(throwable: Throwable) {
-                    Log.e("SpotifyService", throwable.message, throwable)
-                }
-            })
+            override fun onFailure(throwable: Throwable) {
+                Log.e("SpotifyService", throwable.message, throwable)
+                handler(false)
+            }
+        }
+        SpotifyAppRemote.connect(context, connectionParams, connectionListener)
     }
 
     fun disconnect() {
