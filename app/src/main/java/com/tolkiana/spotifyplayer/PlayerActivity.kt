@@ -43,6 +43,12 @@ class PlayerActivity : AppCompatActivity() {
             SpotifyService.resume()
             showPauseButton()
         }
+
+        SpotifyService.suscribeToChanges {
+            SpotifyService.getImage(it.imageUri){
+                trackImageView.setImageBitmap(it)
+            }
+        }
     }
 
     private fun showPlayButton() {

@@ -73,6 +73,12 @@ object SpotifyService {
         }
     }
 
+    fun suscribeToChanges(handler: (Track) -> Unit) {
+        mSpotifyAppRemote?.playerApi?.subscribeToPlayerState()?.setEventCallback {
+            handler(it.track)
+        }
+    }
+
     fun getCurrentTrackImage(handler: (Bitmap) -> Unit)  {
         getCurrentTrack {
             getImage(it.imageUri) {
