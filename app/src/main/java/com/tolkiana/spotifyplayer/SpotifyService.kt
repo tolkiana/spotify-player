@@ -67,17 +67,17 @@ object SpotifyService {
         }
     }
 
+    fun getImage(imageUri: ImageUri, handler: (Bitmap) -> Unit)  {
+        mSpotifyAppRemote?.imagesApi?.getImage(imageUri)?.setResultCallback {
+            handler(it)
+        }
+    }
+
     fun getCurrentTrackImage(handler: (Bitmap) -> Unit)  {
         getCurrentTrack {
             getImage(it.imageUri) {
                 handler(it)
             }
-        }
-    }
-
-    fun getImage(imageUri: ImageUri, handler: (Bitmap) -> Unit)  {
-        mSpotifyAppRemote?.imagesApi?.getImage(imageUri)?.setResultCallback {
-            handler(it)
         }
     }
 
