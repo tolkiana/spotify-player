@@ -1,11 +1,20 @@
 package com.tolkiana.spotifyplayer
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.spotify.protocol.types.ImageUri
+import com.spotify.protocol.types.Track
 
+
+enum class PlayingState {
+    PAUSED,
+    PLAYING,
+    STOPPED
+}
 
 object SpotifyService {
     private const val CLIENT_ID = "YOUR_CLIENT_ID"
@@ -54,15 +63,35 @@ object SpotifyService {
         mSpotifyAppRemote?.playerApi?.pause()
     }
 
-    fun isPlaying(uri: String, handler: (Boolean) -> Unit) {
+    fun getCurrentTrack(handler: (track: Track) -> Unit) {
         mSpotifyAppRemote?.playerApi?.playerState?.setResultCallback { result ->
-            handler(result.track.uri == uri)
+            handler(result.track)
         }
     }
 
-    fun isPaused(uri: String, handler: (Boolean) -> Unit) {
+    fun getCurrentTrackImage(handler: (Bitmap) -> Unit)  {
+        getCurrentTrack {
+            getImage(it.imageUri) {
+                handler(it)
+            }
+        }
+    }
+
+    fun getImage(imageUri: ImageUri, handler: (Bitmap) -> Unit)  {
+        mSpotifyAppRemote?.imagesApi?.getImage(imageUri)?.setResultCallback {
+            handler(it)
+        }
+    }
+
+    fun isPlaying(handler: (Boolean) -> Unit) {
         mSpotifyAppRemote?.playerApi?.playerState?.setResultCallback { result ->
-            handler(result.track.uri == uri && result.isPaused)
+            handler(result.track.uri != null && !result.isPaused)
+        }
+    }
+
+    fun isPaused(handler: (Boolean) -> Unit) {
+        mSpotifyAppRemote?.playerApi?.playerState?.setResultCallback { result ->
+            handler(result.isPaused)
         }
     }
 
