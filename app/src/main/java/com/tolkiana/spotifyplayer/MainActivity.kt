@@ -13,7 +13,9 @@ class MainActivity : AppCompatActivity() {
 
         connectButton.setOnClickListener {
             SpotifyService.connect(this) {
-                showPlayer()
+                if(it) {
+                    showPlayer()
+                }
             }
         }
     }
